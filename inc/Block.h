@@ -7,19 +7,27 @@
 
 class Block{
 public:
+    // Constructor
+    // @param maxWidth Maximum width of the screen
+    // @param maxHeight Maximum height of the screen
+    // @param mass Mass of the block
+    // @param velocity Inicial velocity of the block
+    // @param size Size of blocks sides
     Block(float maxWidth, float maxHeight, float mass, float velocity, float size);
 
     Block();
     ~Block();
 
-    float getDistRW();
+    float getDistRW(); // Returns the distance from the block to the right wall
     float getSize();
     float getMomentum();
     float getVelocity();
     float getMass();
-    void setVelocity(float v);
+    void setVelocity(float v); // Sets the velocity of the block to v
 
-    void setPosition(float maxWidth, float maxHeight, float x);
+    // Sets the position of the right side of the block to the bottom of the screen, 
+    //x away from the right wall
+    void setPosition(float maxWidth, float maxHeight, float x); 
 
     sf::RectangleShape getRect();
 
