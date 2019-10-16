@@ -18,18 +18,22 @@ int main()
                   sf::Style::Close */
                   sf::Style::Fullscreen);
 
-    int wx = window.getSize().x;
-    int wy = window.getSize().y;
+    int wx = window.getSize().x; // Width of the screen
+    int wy = window.getSize().y; // Height of the screen
 
-    Block* b1 = new Block(wx, wy, 100, 1.5, 150);
+    // Create block objects with masses 100 and 1
+    Block* b1 = new Block(wx, wy, 100, 1.5, 150); 
     Block* b2 = new Block(wx, wy, 1, 0, 100);
 
+    // Set the blocks positions
+    b1->setPosition(wx, wy, wx/4); // Position block 1 1/4 of the screens width away from the right side
+    b2->setPosition(wx, wy, wx/2 + 150); // Position block 2 1/2 of the screens width away from the right
+                                         // side plus 150 pixels
 
-    b1->setPosition(wx, wy, wx/4);
-    b2->setPosition(wx, wy, wx/2 + 150);
+    window.setFramerateLimit(60); // Set framerate limit for window 
 
-    window.setFramerateLimit(60);
 
+    // Create font object to use in texts
     sf::Font garamond;
 
     if ( !garamond.loadFromFile("data/Garamond.ttf"))
@@ -39,14 +43,21 @@ int main()
         system( "pause" );
     }
 
-    sf::Text hitNumber;
-    sf::Text title;
-    sf::Text textHits;
-    sf::Text massRatio;
+    // Create text objects
+    sf::Text hitNumber; // Text object to display the number of hits so far.
+                        // Updated every window iteration
+    sf::Text title; // Text object to display the string "3blue1brown's pi approximation method"
+    sf::Text textHits; // Text object to display the string "#hits:"
+    sf::Text massRatio; // Text object to display the mass ratio
 
-    std::string mrat = "m1/m2 = ";
-    mrat += std::to_string(int(b1->getMass()/b2->getMass()));
-    const int hitposition = 220 -wx/2;
+    std::string mrat = "m1/m2 = "; // String that'll be used by the massRatio object to display
+                                   // "m1/m2 = " followed by the mass ratio on the string
+    mrat += std::to_string(int(b1->getMass()/b2->getMass())); // Add the ratio to the string
+                                                              // Mass ratio converted to integer in order
+                                                              // to omit decimal cases for aesthetic purposes
+    const int hitposition = 220 -wx/2; // Variable that contains the position of textHits
+                                       // used to easily align the strings "hits:" and the number of
+                                       // hits displayed by the object hitNumber
     
     massRatio.setFont(garamond);
     massRatio.setString(mrat);
@@ -74,18 +85,20 @@ int main()
     
     sf::Event event;
 
-    float aux;
-    int hits = 0;
+    float aux; // Saves the velocity of block 2 in order to make later calculations for b1's velocity
+    int hits = 0; // Counts the number of times that block 2 hits block 1 or the wall
+    // Window loop
     while(window.isOpen())
     {
-        while(window.pollEvent(event)) // "event = Dequeue(pollEvent)"
+        // Process events
+        while(window.pollEvent(event))
         {
             switch(event.type)
             {
                 case sf::Event::Closed:
                     window.close();
                     break;
-
+                // Close window if spacebar is pressed
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Space)
                     {
@@ -96,39 +109,41 @@ int main()
                     break;
             }
         }
-        window.clear(sf::Color(142, 106, 45));
-        window.draw(b1->getRect());
-        window.draw(b2->getRect());
-        window.draw(hitNumber);
+        window.clear(sf::Color(142, 106, 45)); // Clear previous window
+        window.draw(b1->getRect()); // Draw block 1
+        window.draw(b2->getRect()); // Draw block 2
+        // Draw strings
+        window.draw(hitNumber); 
         window.draw(title);
         window.draw(textHits);
         window.draw(massRatio);
-        window.display();
+        window.display(); // Display everything on the window
 
+        // Set new positions based on velocity
         b1->setPosition(wx, wy, b1->getDistRW() + b1->getVelocity());
         b2->setPosition(wx, wy, b2->getDistRW() + b2->getVelocity());
 
+        // If the blocks touched
         if(b2->getDistRW() - b1->getDistRW() <= b1->getSize())
         {
-            hits++;
-            hitNumber.setString(std::to_string(hits));
+            hits++; // Increment hit count
+            hitNumber.setString(std::to_string(hits)); // Update string in hitNumber object
 
             aux = b2->getVelocity();
+            // Set new velocities according to elastic collision laws
             b2->setVelocity( ((2*b1->getMass()*b1->getVelocity()) + b2->getVelocity()*
                                 (b2->getMass() - b1->getMass()))/(b2->getMass() + b1->getMass()));  
             b1->setVelocity(aux + b2->getVelocity() - b1->getVelocity());
         }
 
+        // If block 2 hits the left wall
         if(b2->getDistRW() + b2->getSize() >= wx)
         {
-            hits++;
-            hitNumber.setString(std::to_string(hits));
-            b2->setVelocity(-b2->getVelocity());
+            hits++; // Increment hit count
+            hitNumber.setString(std::to_string(hits)); // Update string in hitNumber object
+            b2->setVelocity(-b2->getVelocity()); // Change block 2's velocity according to elastic collision laws
         }
             
     }
-
-    std::cout << "\tCreating a window!" << std::endl;
-
     return 0;
 }
