@@ -26,7 +26,7 @@ public:
     void setVelocity(float v); // Sets the velocity of the block to v
 
     // Sets the position of the right side of the block to the bottom of the screen, 
-    //x away from the right wall
+    // x away from the right wall
     void setPosition(float maxWidth, float maxHeight, float x); 
 
     sf::RectangleShape getRect();

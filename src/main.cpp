@@ -22,12 +22,12 @@ int main()
     int wy = window.getSize().y; // Height of the screen
 
     // Create block objects with masses 100 and 1
-    Block* b1 = new Block(wx, wy, 100, 1.5, 150); 
-    Block* b2 = new Block(wx, wy, 1, 0, 100);
+    Block b1 = Block(wx, wy, 10000, 1.5, 150); 
+    Block b2 = Block(wx, wy, 1, 0, 100);
 
     // Set the blocks positions
-    b1->setPosition(wx, wy, wx/4); // Position block 1 1/4 of the screens width away from the right side
-    b2->setPosition(wx, wy, wx/2 + 150); // Position block 2 1/2 of the screens width away from the right
+    b1.setPosition(wx, wy, wx/4); // Position block 1 1/4 of the screens width away from the right side
+    b2.setPosition(wx, wy, wx/2 + 150); // Position block 2 1/2 of the screens width away from the right
                                          // side plus 150 pixels
 
     window.setFramerateLimit(60); // Set framerate limit for window 
@@ -52,7 +52,7 @@ int main()
 
     std::string mrat = "m1/m2 = "; // String that'll be used by the massRatio object to display
                                    // "m1/m2 = " followed by the mass ratio on the string
-    mrat += std::to_string(int(b1->getMass()/b2->getMass())); // Add the ratio to the string
+    mrat += std::to_string(int(b1.getMass()/b2.getMass())); // Add the ratio to the string
                                                               // Mass ratio converted to integer in order
                                                               // to omit decimal cases for aesthetic purposes
     const int hitposition = 220 -wx/2; // Variable that contains the position of textHits
@@ -110,8 +110,8 @@ int main()
             }
         }
         window.clear(sf::Color(142, 106, 45)); // Clear previous window
-        window.draw(b1->getRect()); // Draw block 1
-        window.draw(b2->getRect()); // Draw block 2
+        window.draw(b1.getRect()); // Draw block 1
+        window.draw(b2.getRect()); // Draw block 2
         // Draw strings
         window.draw(hitNumber); 
         window.draw(title);
@@ -120,28 +120,28 @@ int main()
         window.display(); // Display everything on the window
 
         // Set new positions based on velocity
-        b1->setPosition(wx, wy, b1->getDistRW() + b1->getVelocity());
-        b2->setPosition(wx, wy, b2->getDistRW() + b2->getVelocity());
+        b1.setPosition(wx, wy, b1.getDistRW() + b1.getVelocity());
+        b2.setPosition(wx, wy, b2.getDistRW() + b2.getVelocity());
 
         // If the blocks touched
-        if(b2->getDistRW() - b1->getDistRW() <= b1->getSize())
+        if(b2.getDistRW() - b1.getDistRW() <= b1.getSize())
         {
             hits++; // Increment hit count
             hitNumber.setString(std::to_string(hits)); // Update string in hitNumber object
 
-            aux = b2->getVelocity();
+            aux = b2.getVelocity();
             // Set new velocities according to elastic collision laws
-            b2->setVelocity( ((2*b1->getMass()*b1->getVelocity()) + b2->getVelocity()*
-                                (b2->getMass() - b1->getMass()))/(b2->getMass() + b1->getMass()));  
-            b1->setVelocity(aux + b2->getVelocity() - b1->getVelocity());
+            b2.setVelocity( ((2*b1.getMass()*b1.getVelocity()) + b2.getVelocity()*
+                                (b2.getMass() - b1.getMass()))/(b2.getMass() + b1.getMass()));  
+            b1.setVelocity(aux + b2.getVelocity() - b1.getVelocity());
         }
 
         // If block 2 hits the left wall
-        if(b2->getDistRW() + b2->getSize() >= wx)
+        if(b2.getDistRW() + b2.getSize() >= wx)
         {
             hits++; // Increment hit count
             hitNumber.setString(std::to_string(hits)); // Update string in hitNumber object
-            b2->setVelocity(-b2->getVelocity()); // Change block 2's velocity according to elastic collision laws
+            b2.setVelocity(-b2.getVelocity()); // Change block 2's velocity according to elastic collision laws
         }
             
     }
